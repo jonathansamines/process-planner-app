@@ -14,6 +14,10 @@ const baseConfig = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
   },
+  devServer: {
+    port: 9000,
+    publicPath: '/dist/',
+  },
   module: {
     rules: [
       {
@@ -35,20 +39,18 @@ const baseConfig = {
 
 const developmentConfig = {
   devtool: 'inline-source-maps',
-  devServer: {
-    port: 9000,
-  },
 };
 
 module.exports = (env) => {
   switch (env) {
+    case 'production':
+      return baseConfig;
+
     case 'development':
+    default:
       return merge(
         baseConfig,
         developmentConfig
       );
-    case 'production':
-    default:
-      return baseConfig;
   }
 };

@@ -23,6 +23,7 @@ const baseConfig = {
       {
         test: /\.js$/,
         use: ['babel-loader'],
+        exclude: [/joi-browser/],
       },
       {
         test: /\.scss$/,

@@ -7,11 +7,21 @@ function createProcessRow(projectionUnit) {
   return (
     <tr>
       <td>{projectionUnit.process.name}</td>
-      <td>{projectionUnit.process.startTime}</td>
-      <td>{projectionUnit.process.executionTime}</td>
+      <td>
+        <input
+          type='number'
+          className='form-control'
+          defaultValue={projectionUnit.process.startTime} />
+      </td>
+      <td>
+        <input
+          type='number'
+          className='form-control'
+          defaultValue={projectionUnit.process.executionTime} />
+      </td>
       <td>{projectionUnit.schedule.completionTime}</td>
       <td>{projectionUnit.schedule.serviceTime}</td>
-      <td>{projectionUnit.schedule.waitingTime.length}</td>
+      <td>{projectionUnit.schedule.waitingUnits.length}</td>
       <td>{projectionUnit.schedule.cpuUsage}</td>
     </tr>
   );

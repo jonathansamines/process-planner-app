@@ -10,9 +10,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "browser": {
+    "joi": "joi-browser"
+  },
   "dependencies": {
     "joi": "^10.4.2",
-    "lodash": "^4.17.4"
+    "joi-browser": "^9.1.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.18.1"
   },
   "devDependencies": {
     "eslint": "^3.19.0",

@@ -9,7 +9,7 @@ const ProjectionTable = (props) => {
   const { totalTime, projection } = props;
 
   return (
-    <table>
+    <table className='table table-striped'>
       <ProjectionTableHeaders timeUnits={totalTime} />
 
       <tbody>

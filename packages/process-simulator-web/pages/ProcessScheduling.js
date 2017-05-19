@@ -21,13 +21,19 @@ class ProcessScheduling extends React.Component {
 
   render() {
     return (
-      <div>
-        <ProcessGenerationForm onChange={this.generateProcessTable} />
-        <ProcessTable
-          projection={false}
-          averageWaitingtime={false}
-          averageServiceTime={false}
-          averageCPUUsage={false} />
+      <div className='container'>
+        <div className='row'>
+          <div className='col-xs-4'>
+            <ProcessGenerationForm onChange={this.generateProcessTable} />
+          </div>
+          <div className='col-xs-8'>
+            <ProcessTable
+              projection={false}
+              averageWaitingtime={0}
+              averageServiceTime={0}
+              averageCPUUsage={0} />
+          </div>
+        </div>
       </div>
     );
   }

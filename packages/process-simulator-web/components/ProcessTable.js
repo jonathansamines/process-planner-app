@@ -26,7 +26,7 @@ const ProcessTable = (props) => {
   } = props;
 
   return (
-    <table>
+    <table className='table table-striped'>
       <thead>
         <tr>
           <td>Procesos</td>

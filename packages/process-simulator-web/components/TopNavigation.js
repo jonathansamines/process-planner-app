@@ -4,19 +4,15 @@ const React = require('react');
 
 const TopNavigation = () => {
   return (
-    <nav className='navbar navbar-default nav-bar__top'>
-      <div className='container-fluid'>
-        <div className='navbar-header'>
-          <a className='navbar-brand' href='#'>Planificador de Procesos</a>
-        </div>
-        <div id='navbar' className='navbar-collapse collapse'>
-          <ul className='nav navbar-nav'>
-            <li className='active'><a href='#'>Planificación</a></li>
-            <li><a href='#'>Historial</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <div className='header clearfix'>
+      <nav>
+        <ul className='nav nav-pills pull-right'>
+          <li role='presentation' className='active'><a href='#'>Planificación</a></li>
+          <li role='presentation'><a href='#'>Historial</a></li>
+        </ul>
+      </nav>
+      <h3 className='text-muted'>Planificación de Procesos</h3>
+    </div>
   );
 };
 

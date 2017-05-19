@@ -25,15 +25,25 @@ class ProcessGenerationForm extends React.Component {
 
   render() {
     return (
-      <form>
-        <fieldset>
+      <form className='form-horizontal'>
+        <div className='form-group'>
           <label htmlFor='numberOfProcess'>Número de procesos a simular</label>
-          <input id='numberOfProcess' onChange={this.updateNumberOfProcess} />
-
-          <button onClick={this.confirm}>
-            Crear tabla de procesos
+          <input
+            id='numberOfProcess'
+            type='number'
+            min={0}
+            step={1}
+            className='form-control'
+            onChange={this.updateNumberOfProcess} />
+        </div>
+        <div className='form-group'>
+          <button
+            className='btn btn-success'
+            type='submit'
+            onClick={this.confirm}>
+            Generar Procesos
           </button>
-        </fieldset>
+        </div>
       </form>
     );
   }

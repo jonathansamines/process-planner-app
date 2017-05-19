@@ -8,9 +8,11 @@ const Index = () => {
   return (
     <div className='container'>
       <TopNavigation />
-      <div className='jumbotron'>
-        {/* <ProcessSchedulingPage /> */}
-      </div>
+      <ProcessSchedulingPage />
+
+      <footer className='footer'>
+       <p>&copy; 2017 Proyecto Sistemas Operativos 2</p>
+     </footer>
     </div>
   );
 };

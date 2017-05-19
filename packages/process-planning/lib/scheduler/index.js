@@ -1,8 +1,9 @@
 'use strict';
 
 const Joi = require('joi');
-const firstComeFirstServed = require('./first-come-first-served');
-const roundRobin = require('./round-robin');
+const orderBy = require('lodash/orderBy');
+const firstInFirstOutScheduler = require('./first-in-first-out');
+const roundRobinScheduler = require('./round-robin');
 
 const processSchema = Joi.object()
   .keys({
@@ -21,9 +22,22 @@ const schema = Joi.object().keys({
 function schedulerBuilder(options) {
   const opts = Joi.attempt(options, schema);
 
+  const firstComeFirstServed = firstInFirstOutScheduler.schedule(
+    Object.assign({}, opts, {
+      processList: orderBy(opts.processList, ['startTime'], ['asc']),
+    })
+  );
+
+  const shortestJob = firstInFirstOutScheduler.schedule(
+    Object.assign({}, opts, {
+      processList: orderBy(opts.processList, ['executionTime'], ['desc']),
+    })
+  );
+
   return {
-    firstComeFirstServed: firstComeFirstServed.schedule(opts),
-    roundRobin: roundRobin.schedule(opts),
+    firstComeFirstServed,
+    shortestJob,
+    roundRobin: roundRobinScheduler.schedule(opts),
   };
 }
 

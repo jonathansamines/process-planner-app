@@ -2,15 +2,6 @@
 
 const createRange = require('lodash/range');
 
-function orderByStartTime(processList) {
-  return processList
-    .splice(0)
-    .sort((previous, current) => (
-      previous &&
-      previous.startTime > current.startTime
-    ));
-}
-
 function createScheduleForProcess(previousSchedule, currentProcess) {
   const completionTime = previousSchedule.completionTime + currentProcess.executionTime;
   const serviceTime = completionTime - currentProcess.startTime;
@@ -51,11 +42,9 @@ function createProjection(projection, currentProcess, index) {
   });
 }
 
-function buildFirstComeFirstServed(options) {
-  const sortedProcessList = orderByStartTime(options.processList);
-
+function buildFirstInFirstOut(options) {
   return () => {
-    const processExecutionProjection = sortedProcessList.reduce(createProjection, []);
+    const processExecutionProjection = options.processList.reduce(createProjection, []);
     const lastProjectedProcess = processExecutionProjection[processExecutionProjection.length - 1];
 
     return {
@@ -68,5 +57,5 @@ function buildFirstComeFirstServed(options) {
 }
 
 module.exports = {
-  schedule: buildFirstComeFirstServed,
+  schedule: buildFirstInFirstOut,
 };

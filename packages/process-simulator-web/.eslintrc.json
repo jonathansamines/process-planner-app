@@ -3,7 +3,11 @@
   "parserOptions": {
     "sourceType": "script"
   },
+  "env": {
+    "browser": true
+  },
   "rules": {
+    "arrow-body-style": 0,
     "comma-dangle": ["error", {
       "arrays": "always-multiline",
       "objects": "always-multiline",

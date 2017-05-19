@@ -1,6 +1,7 @@
 'use strict';
 
 const createRange = require('lodash/range');
+const projectedTimes = require('./../projected-times');
 
 function createScheduleForProcess(previousSchedule, currentProcess) {
   const completionTime = previousSchedule.completionTime + currentProcess.executionTime;
@@ -45,14 +46,12 @@ function createProjection(projection, currentProcess, index) {
 function buildFirstInFirstOut(options) {
   return () => {
     const processExecutionProjection = options.processList.reduce(createProjection, []);
-    const lastProjectedProcess = processExecutionProjection[processExecutionProjection.length - 1];
 
-    return {
-      // the last scheduled process completion time
-      // is the totalTime used to compute a set of process with this algorithm
-      totalTime: lastProjectedProcess.schedule.completionTime,
+    const computedProjectedTimes = projectedTimes.compute(processExecutionProjection);
+
+    return Object.assign({}, computedProjectedTimes, {
       projection: processExecutionProjection,
-    };
+    });
   };
 }
 

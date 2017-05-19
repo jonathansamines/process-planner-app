@@ -39,5 +39,7 @@ const scheduler = builder.create({
 
 // eslint-disable-next-line no-console
 console.log(JSON.stringify(scheduler.firstComeFirstServed()));
+console.log('---');
+console.log(JSON.stringify(scheduler.shortestJob()));
 
 module.exports = builder;

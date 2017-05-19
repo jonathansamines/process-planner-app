@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const merge = require('webpack-merge');
 const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
 const baseConfig = {
@@ -32,9 +33,20 @@ const baseConfig = {
   ],
 };
 
+const developmentConfig = {
+  devtool: 'inline-source-maps',
+  devServer: {
+    port: 9000,
+  },
+};
+
 module.exports = (env) => {
   switch (env) {
     case 'development':
+      return merge(
+        baseConfig,
+        developmentConfig
+      );
     case 'production':
     default:
       return baseConfig;

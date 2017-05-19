@@ -11,8 +11,8 @@ function orderByStartTime(processList) {
     ));
 }
 
-function createPlanForProcess(previousPlan, currentProcess) {
-  const completionTime = previousPlan.completionTime + currentProcess.executionTime;
+function createScheduleForProcess(previousSchedule, currentProcess) {
+  const completionTime = previousSchedule.completionTime + currentProcess.executionTime;
   const serviceTime = completionTime - currentProcess.startTime;
 
   return {
@@ -21,31 +21,33 @@ function createPlanForProcess(previousPlan, currentProcess) {
     cpuUsage: currentProcess.executionTime / serviceTime,
     waitingUnits: createRange(
       currentProcess.startTime,
-      previousPlan.completionTime
+      previousSchedule.completionTime
     ),
     executionUnits: createRange(
-      previousPlan.completionTime,
+      previousSchedule.completionTime,
       completionTime
     ),
   };
 }
 
-function createSchedule(schedule, currentProcess, index) {
-  // the first item, has no previous process, and thus there is no scheduled plan yet
+function createProjection(projection, currentProcess, index) {
+  // the first item, has no previous process, and thus there is no projection for it yet
   if (index === 0) {
-    return schedule.concat({
+    const fakeSchedule = { completionTime: currentProcess.startTime };
+
+    return projection.concat({
       process: currentProcess,
-      plan: createPlanForProcess({ completionTime: currentProcess.startTime }, currentProcess),
+      schedule: createScheduleForProcess(fakeSchedule, currentProcess),
     });
   }
 
-  // it is safe to access the previous plan here
-  // since it is guarateed there is at least one plan
-  const previousScheduledPlan = schedule[index - 1];
+  // it is safe to access the previous process projection
+  // at least one is guarateed to exist
+  const previousProjection = projection[index - 1];
 
-  return schedule.concat({
+  return projection.concat({
     process: currentProcess,
-    plan: createPlanForProcess(previousScheduledPlan.plan, currentProcess),
+    schedule: createScheduleForProcess(previousProjection.schedule, currentProcess),
   });
 }
 
@@ -53,16 +55,14 @@ function buildFirstComeFirstServed(options) {
   const sortedProcessList = orderByStartTime(options.processList);
 
   return () => {
-    // a "first plan" with completion time equal to the process startTime is simulated
-    // in order to schedule the first process as soon as possible
-    const processListSchedule = sortedProcessList.reduce(createSchedule, []);
-    const lastSchedule = processListSchedule[processListSchedule.length - 1];
+    const processExecutionProjection = sortedProcessList.reduce(createProjection, []);
+    const lastProjectedProcess = processExecutionProjection[processExecutionProjection.length - 1];
 
     return {
-      // last scheduled process completion time
+      // the last scheduled process completion time
       // is the totalTime used to compute a set of process with this algorithm
-      totalTime: lastSchedule.plan.completionTime,
-      schedule: processListSchedule,
+      totalTime: lastProjectedProcess.schedule.completionTime,
+      projection: processExecutionProjection,
     };
   };
 }

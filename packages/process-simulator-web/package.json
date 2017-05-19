@@ -14,12 +14,17 @@
     "babel-loader": "^7.0.0",
     "bootstrap-sass": "^3.3.7",
     "css-loader": "^0.28.1",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-plugin-import": "^2.2.0",
     "extract-text-webpack-plugin": "^2.1.0",
     "node-sass": "^4.5.3",
     "sass-loader": "^6.0.5",
     "webpack": "^2.5.1"
   },
   "dependencies": {
+    "eslint": "^3.19.0",
+    "eslint-plugin-react": "^7.0.1",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
     "react-dom": "^15.5.4"

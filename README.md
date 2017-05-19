@@ -70,9 +70,9 @@ A scheduling plan represents, a data-table like structure which have the process
 A schedule plan has the following structure:
 
 + **totalTime** - The total amount of time the list of processes need in order to be completed.
-+ **schedule[]**
++ **processList[]**
   - **process** Any of the processed originally specified at the scheduler builder
-  - **plan**
+  - **schedule**
     - **executionUnits[]** An ordered array of moments (seconds) in which this process was active. The length of this array indicates the *execution time* (t).
     - **waitingUnits[]** An ordered array of moments in which this process was waiting. The length of this array indicates the *waiting time* (E)
     - **completionTime** Indicates the time at which the process was completely computed. (tf)

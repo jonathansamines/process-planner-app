@@ -37,6 +37,7 @@ const scheduler = builder.create({
   ],
 });
 
-console.log(JSON.stringify(scheduler.roundRobin()));
+// eslint-disable-next-line no-console
+console.log(JSON.stringify(scheduler.firstComeFirstServed()));
 
 module.exports = builder;

@@ -1,10 +1,11 @@
 'use strict';
 
 const React = require('react');
-const ProcessGenerationForm = require('./../components/ProcessGenerationForm');
-const ProcessTable = require('./../components/ProcessTable');
 const createRange = require('lodash/range');
 const planner = require('@jonathansamines/process-planning');
+const ProcessGenerationForm = require('./../components/ProcessGenerationForm');
+const ProcessTable = require('./../components/ProcessTable');
+const ProjectionTable = require('./../components/ProjectionTable');
 
 function generateProcessList(numberOfProcess) {
   const processList = createRange(numberOfProcess);
@@ -18,23 +19,6 @@ function generateProcessList(numberOfProcess) {
   });
 }
 
-function getProcessTable(numberOfProcess) {
-  const processList = generateProcessList(numberOfProcess);
-  const scheduler = planner.create({
-    processList,
-  });
-
-  const schedulingPlan = scheduler.firstComeFirstServed();
-
-  return (
-    <ProcessTable
-      projection={schedulingPlan.projection}
-      averageWaitingTime={0}
-      averageServiceTime={0}
-      averageCPUUsage={0} />
-  );
-}
-
 class ProcessScheduling extends React.Component {
   constructor(props) {
     super(props);
@@ -42,34 +26,85 @@ class ProcessScheduling extends React.Component {
     this.state = {
       numberOfProcess: 0,
       projection: [],
-      isProcessNumberConfirmed: false,
+      step: 0,
     };
 
     this.confirmProcessNumber = this.confirmProcessNumber.bind(this);
+    this.scheduleProcessList = this.scheduleProcessList.bind(this);
+  }
+
+  wizardStep(steps, getComponent) {
+    if (steps.indexOf(this.state.step) === -1) return null;
+
+    return getComponent();
   }
 
   confirmProcessNumber(numberOfProcess) {
+    const processList = generateProcessList(numberOfProcess);
+    const scheduler = planner.create({
+      processList,
+    });
+
+    const schedulingPlan = scheduler.firstComeFirstServed();
+
     this.setState({
       numberOfProcess,
-      isProcessNumberConfirmed: true,
+      step: 1,
+      projection: schedulingPlan.projection,
+    });
+  }
+
+  scheduleProcessList(projection) {
+    const processList = projection.map(projectionUnit => projectionUnit.process);
+    const scheduler = planner.create({
+      processList,
+    });
+
+    const schedulingPlan = scheduler.firstComeFirstServed();
+
+    this.setState({
+      projection: schedulingPlan.projection,
+      totalTime: schedulingPlan.totalTime,
+      step: 2,
     });
   }
 
   render() {
-    const { isProcessNumberConfirmed, numberOfProcess } = this.state;
+    const {
+      step,
+      projection,
+      totalTime,
+    } = this.state;
 
     return (
       <div className='container'>
         <div className='row'>
           <div className='col-xs-3'>
             <ProcessGenerationForm
-              isEnabled={!isProcessNumberConfirmed}
+              isEnabled={step === 0}
               onChange={this.confirmProcessNumber} />
           </div>
           <div className='col-xs-9'>
             {
-              isProcessNumberConfirmed &&
-              getProcessTable(numberOfProcess)
+              this.wizardStep([1, 2], () => (
+                <ProcessTable
+                  projection={projection}
+                  averageWaitingTime={0}
+                  averageServiceTime={0}
+                  averageCPUUsage={0}
+                  onChange={this.scheduleProcessList} />
+              ))
+            }
+          </div>
+        </div>
+        <div className='row'>
+          <div className='col-xs-12'>
+            {
+              this.wizardStep([2], () => (
+                <ProjectionTable
+                  projection={projection}
+                  totalTime={totalTime} />
+              ))
             }
           </div>
         </div>

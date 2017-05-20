@@ -17,6 +17,7 @@ const ProjectionTable = (props) => {
           <ProcessScheduleRow
             key={projectionUnit.process.name}
             processName={projectionUnit.process.name}
+            totalTime={totalTime}
             schedule={projectionUnit.schedule} />
         ))}
       </tbody>

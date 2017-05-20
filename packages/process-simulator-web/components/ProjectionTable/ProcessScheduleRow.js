@@ -8,6 +8,7 @@ const createTimingColumns = (totalTime, schedule) => {
   const range = createRange(totalTime);
 
   return range.map((timeUnit) => {
+    console.log(timeUnit, schedule.waitingUnits[timeUnit]);
     const isWaiting = schedule.waitingUnits[timeUnit] === timeUnit;
     const isExecuting = schedule.executionUnits[timeUnit] === timeUnit;
     const isCompleted = schedule.completionTime === timeUnit;

@@ -1,0 +1,114 @@
+'use strict';
+
+const React = require('react');
+const PropTypes = require('prop-types');
+const ProcessTableRow = require('./ProcessTableRow');
+
+const byProcessName = (newProcess) => {
+  return processUnit => (
+    processUnit.name === newProcess.name ? newProcess : processUnit
+  );
+};
+
+class ProcessTable extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      projection: props.projection,
+      isProcessInfoConfirmed: false,
+    };
+
+    this.onProcessUnitChange = this.onProcessUnitChange.bind(this);
+    this.confirmProcessInfo = this.confirmProcessInfo.bind(this);
+  }
+
+  onProcessUnitChange(processUnit) {
+    const newProjection = this.projection.map(byProcessName(processUnit));
+
+    this.setState({
+      projection: newProjection,
+    });
+  }
+
+  confirmProcessInfo(event) {
+    event.preventDefault();
+
+    this.setState({
+      isProcessInfoConfirmed: true,
+    });
+
+    this.props.onChange(this.state.projection);
+  }
+
+  render() {
+    const {
+      averageServiceTime,
+      averageWaitingTime,
+      averageCPUUsage,
+    } = this.props;
+
+    const { isProcessInfoConfirmed, projection } = this.state;
+
+    return (
+      <table className='table table-striped'>
+        <caption>
+          <strong>Resumen de Procesos</strong>
+          <br />
+          <small>Ingrese la información requerida para cada proceso</small>
+        </caption>
+        <thead>
+          <tr>
+            <td>Procesos</td>
+            <td>Tiempo Inicial (ti)</td>
+            <td>Tiempo de Ejecución (t)</td>
+            <td>Tiempo Final (tf)</td>
+            <td>Tiempo de Servicio (T)</td>
+            <td>Tiempo de Espera (E)</td>
+            <td>Uso del CPU (I)</td>
+          </tr>
+        </thead>
+
+        <tbody>
+          {projection.map(projectionUnit => (
+            <ProcessTableRow
+              key={projectionUnit.process.name}
+              processUnit={projectionUnit.process}
+              schedule={projectionUnit.schedule}
+              onChange={this.onProcessUnitChange} />
+          ))}
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td colSpan={4} />
+            <td>{averageServiceTime}</td>
+            <td>{averageWaitingTime}</td>
+            <td>{averageCPUUsage}</td>
+          </tr>
+          <tr>
+            <td colSpan={6} />
+            <td className='text-right'>
+              <button
+                className='btn btn-primary'
+                disabled={isProcessInfoConfirmed}
+                onClick={this.confirmProcessInfo}>
+                Planificar Procesos
+              </button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    );
+  }
+}
+
+ProcessTable.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  projection: PropTypes.arrayOf(PropTypes.object).isRequired,
+  averageServiceTime: PropTypes.number.isRequired,
+  averageWaitingTime: PropTypes.number.isRequired,
+  averageCPUUsage: PropTypes.number.isRequired,
+};
+
+module.exports = ProcessTable;

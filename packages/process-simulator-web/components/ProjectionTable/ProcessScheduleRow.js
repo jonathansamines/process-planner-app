@@ -2,6 +2,7 @@
 
 const React = require('react');
 const PropTypes = require('prop-types');
+const classNames = require('classnames');
 const createRange = require('lodash/range');
 
 const createTimingColumns = (totalTime, schedule) => {
@@ -12,11 +13,20 @@ const createTimingColumns = (totalTime, schedule) => {
     const isExecuting = !!schedule.executionUnits.find(u => u - 1 === timeUnit);
     const isCompleted = schedule.completionTime - 1 === timeUnit;
 
+    const styles = classNames({
+      label: true,
+      'label-primary': isWaiting,
+      'label-success': isExecuting,
+      'label-default': isCompleted,
+    });
+
     return (
       <td key={timeUnit}>
-        {isWaiting && 'E'}
-        {isExecuting && 'X'}
-        {isCompleted && 'FI'}
+        <span className={styles}>
+          {isWaiting && 'E'}
+          {isExecuting && 'X'}
+          {isCompleted && 'FI'}
+        </span>
       </td>
     );
   });

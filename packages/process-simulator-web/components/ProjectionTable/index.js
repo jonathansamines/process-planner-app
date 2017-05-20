@@ -6,10 +6,22 @@ const ProjectionTableHeaders = require('./ProjectionTableHeaders');
 const ProcessScheduleRow = require('./ProcessScheduleRow');
 
 const ProjectionTable = (props) => {
-  const { totalTime, projection } = props;
+  const {
+    totalTime,
+    projection,
+    algorithName,
+  } = props;
 
   return (
     <table className='table table-striped'>
+      <caption>
+        <strong>Planificación de procesos</strong>
+        <br />
+        <small>
+          <strong>Algoritmo: </strong>
+          <i>{algorithName}</i>
+        </small>
+      </caption>
       <ProjectionTableHeaders timeUnits={totalTime} />
 
       <tbody>
@@ -27,6 +39,7 @@ const ProjectionTable = (props) => {
 };
 
 ProjectionTable.propTypes = {
+  algorithName: PropTypes.string.isRequired,
   totalTime: PropTypes.number.isRequired,
   projection: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

@@ -104,6 +104,7 @@ class ProcessScheduling extends React.Component {
             {
               this.wizardStep([2], () => (
                 <ProjectionTable
+                  algorithName='firstComeFirstServed'
                   projection={projection}
                   totalTime={totalTime} />
               ))

@@ -33,7 +33,7 @@ class ProcessGenerationForm extends React.Component {
         <fieldset
           className='form-group'
           disabled={!isEnabled}>
-          <label htmlFor='numberOfProcess'>Número de procesos a simular</label>
+          <label htmlFor='numberOfProcess'>Número de procesos</label>
           <input
             id='numberOfProcess'
             type='number'

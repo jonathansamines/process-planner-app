@@ -11,7 +11,7 @@ const ProjectionTableHeaders = (props) => {
   return (
     <thead>
       <tr>
-        <th>Process name</th>
+        <th>Procesos</th>
         {range.map(unit => <th key={unit}>{unit}</th>)}
       </tr>
     </thead>

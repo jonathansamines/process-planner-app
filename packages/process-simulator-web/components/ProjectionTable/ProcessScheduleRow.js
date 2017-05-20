@@ -8,10 +8,9 @@ const createTimingColumns = (totalTime, schedule) => {
   const range = createRange(totalTime);
 
   return range.map((timeUnit) => {
-    console.log(timeUnit, schedule.waitingUnits[timeUnit]);
-    const isWaiting = schedule.waitingUnits[timeUnit] === timeUnit;
-    const isExecuting = schedule.executionUnits[timeUnit] === timeUnit;
-    const isCompleted = schedule.completionTime === timeUnit;
+    const isWaiting = !!schedule.waitingUnits.find(u => u - 1 === timeUnit);
+    const isExecuting = !!schedule.executionUnits.find(u => u - 1 === timeUnit);
+    const isCompleted = schedule.completionTime - 1 === timeUnit;
 
     return (
       <td key={timeUnit}>
@@ -24,18 +23,19 @@ const createTimingColumns = (totalTime, schedule) => {
 };
 
 const ProcessScheduleRow = (props) => {
-  const { totalTime, processName, schedule } = props;
+  const { totalTime, processName, schedule, startTime } = props;
 
   return (
     <tr>
       <td>{processName}</td>
-      {createTimingColumns(totalTime, schedule)}
+      {createTimingColumns(totalTime, schedule, startTime)}
     </tr>
   );
 };
 
 ProcessScheduleRow.propTypes = {
   processName: PropTypes.string.isRequired,
+  startTime: PropTypes.number.isRequired,
   schedule: PropTypes.object.isRequired,
   totalTime: PropTypes.number.isRequired,
 };

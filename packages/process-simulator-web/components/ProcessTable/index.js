@@ -57,7 +57,7 @@ class ProcessTable extends React.Component {
     const { isProcessInfoConfirmed, projection } = this.state;
 
     return (
-      <table className='table table-striped'>
+      <table className='table table-striped table-condensed'>
         <caption>
           <strong>Resumen de Procesos</strong>
           <br />

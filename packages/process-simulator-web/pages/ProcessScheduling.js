@@ -62,6 +62,8 @@ class ProcessScheduling extends React.Component {
 
     const schedulingPlan = scheduler.firstComeFirstServed();
 
+    console.info('Scheduling plan: ', schedulingPlan);
+
     this.setState({
       projection: schedulingPlan.projection,
       totalTime: schedulingPlan.totalTime,
@@ -79,12 +81,12 @@ class ProcessScheduling extends React.Component {
     return (
       <div className='container'>
         <div className='row'>
-          <div className='col-xs-3'>
+          <div className='col-xs-2'>
             <ProcessGenerationForm
               isEnabled={step === 0}
               onChange={this.confirmProcessNumber} />
           </div>
-          <div className='col-xs-9'>
+          <div className='col-xs-10'>
             {
               this.wizardStep([1, 2], () => (
                 <ProcessTable

@@ -8,6 +8,18 @@ const ProcessTable = require('./../components/ProcessTable');
 const ProjectionTable = require('./../components/ProjectionTable');
 const AlgorithmSelector = require('./../components/AlgorithmSelector');
 
+const algorithmNameMap = {
+  FCFS: 'First Come, First Served',
+  SJF: 'Shortest Job First',
+  RR: 'Round Robin',
+};
+
+const algorithmImplMap = {
+  FCFS: 'firstComeFirstServed',
+  SJF: 'shortestJob',
+  RR: 'roundRobin',
+};
+
 function generateProcessList(numberOfProcess) {
   const processList = createRange(numberOfProcess);
 
@@ -27,11 +39,13 @@ class ProcessScheduling extends React.Component {
     this.state = {
       numberOfProcess: 0,
       projection: [],
+      selectedAlgorithm: 'FCFS',
       step: 0,
     };
 
     this.confirmProcessNumber = this.confirmProcessNumber.bind(this);
     this.scheduleProcessList = this.scheduleProcessList.bind(this);
+    this.onAlgorithmChange = this.onAlgorithmChange.bind(this);
   }
 
   wizardStep(steps, getComponent) {
@@ -40,13 +54,19 @@ class ProcessScheduling extends React.Component {
     return getComponent();
   }
 
+  onAlgorithmChange(event) {
+    this.setState({
+      selectedAlgorithm: event.target.value,
+    });
+  }
+
   confirmProcessNumber(numberOfProcess) {
     const processList = generateProcessList(numberOfProcess);
     const scheduler = planner.create({
       processList,
     });
 
-    const schedulingPlan = scheduler.firstComeFirstServed();
+    const schedulingPlan = scheduler[algorithmImplMap[this.state.selectedAlgorithm]]();
 
     this.setState({
       numberOfProcess,
@@ -61,7 +81,7 @@ class ProcessScheduling extends React.Component {
       processList,
     });
 
-    const schedulingPlan = scheduler.firstComeFirstServed();
+    const schedulingPlan = scheduler[algorithmImplMap[this.state.selectedAlgorithm]]();
 
     console.info('Scheduling plan: ', schedulingPlan);
 
@@ -77,6 +97,7 @@ class ProcessScheduling extends React.Component {
       step,
       projection,
       totalTime,
+      selectedAlgorithm,
     } = this.state;
 
     return (
@@ -93,7 +114,8 @@ class ProcessScheduling extends React.Component {
 
             <AlgorithmSelector
               isEnabled={step === 2}
-              value={'FCFS'} />
+              value={selectedAlgorithm}
+              onChange={this.onAlgorithmChange} />
           </div>
           <div className='col-xs-9 col-xs-offset-1'>
             {
@@ -126,7 +148,7 @@ class ProcessScheduling extends React.Component {
             {
               this.wizardStep([2], () => (
                 <ProjectionTable
-                  algorithName='firstComeFirstServed'
+                  algorithName={algorithmNameMap[selectedAlgorithm]}
                   projection={projection}
                   totalTime={totalTime} />
               ))

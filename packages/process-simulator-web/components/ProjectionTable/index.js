@@ -13,7 +13,7 @@ const ProjectionTable = (props) => {
   } = props;
 
   return (
-    <table className='table table-striped'>
+    <table className='table table-striped table-condensed'>
       <caption>
         <strong>Planificación de procesos</strong>
         <br />

@@ -6,6 +6,7 @@ const planner = require('@jonathansamines/process-planning');
 const ProcessGenerationForm = require('./../components/ProcessGenerationForm');
 const ProcessTable = require('./../components/ProcessTable');
 const ProjectionTable = require('./../components/ProjectionTable');
+const AlgorithmSelector = require('./../components/AlgorithmSelector');
 
 function generateProcessList(numberOfProcess) {
   const processList = createRange(numberOfProcess);
@@ -85,8 +86,26 @@ class ProcessScheduling extends React.Component {
             <ProcessGenerationForm
               isEnabled={step === 0}
               onChange={this.confirmProcessNumber} />
+
+            <br />
+            <hr />
+            <br />
+
+            <AlgorithmSelector value={'FCFS'} />
           </div>
           <div className='col-xs-10'>
+            {
+              this.wizardStep([0], () => (
+                <div className='row'>
+                  <div className='col-xs-10 col-xs-offset-1'>
+                    <div className='well'>
+                      Por favor, ingrese un número de procesos a simular
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+
             {
               this.wizardStep([1, 2], () => (
                 <ProcessTable

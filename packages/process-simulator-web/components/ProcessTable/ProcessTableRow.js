@@ -30,7 +30,7 @@ class ProcessTableRow extends React.Component {
         <td>
           <input
             type='number'
-            className='form-control'
+            className='form-control input-sm'
             min={0}
             onChange={this.onEdition('startTime')}
             value={processUnit.startTime} />
@@ -38,7 +38,7 @@ class ProcessTableRow extends React.Component {
         <td>
           <input
             type='number'
-            className='form-control'
+            className='form-control input-sm'
             min={0}
             onChange={this.onEdition('executionTime')}
             value={processUnit.executionTime} />

@@ -66,12 +66,12 @@ class ProcessTable extends React.Component {
         <thead>
           <tr>
             <td>Procesos</td>
-            <td>Tiempo Inicial (ti)</td>
-            <td>Tiempo de Ejecución (t)</td>
-            <td>Tiempo Final (tf)</td>
-            <td>Tiempo de Servicio (T)</td>
-            <td>Tiempo de Espera (E)</td>
-            <td>Uso del CPU (I)</td>
+            <td>Tiempo inicio</td>
+            <td>Tiempo de ejecución</td>
+            <td>Tiempo final</td>
+            <td>Tiempo de servicio</td>
+            <td>Tiempo de espera</td>
+            <td>Uso del CPU</td>
           </tr>
         </thead>
 

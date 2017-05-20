@@ -91,13 +91,15 @@ class ProcessScheduling extends React.Component {
             <hr />
             <br />
 
-            <AlgorithmSelector value={'FCFS'} />
+            <AlgorithmSelector
+              isEnabled={step === 2}
+              value={'FCFS'} />
           </div>
-          <div className='col-xs-10'>
+          <div className='col-xs-9 col-xs-offset-1'>
             {
               this.wizardStep([0], () => (
                 <div className='row'>
-                  <div className='col-xs-10 col-xs-offset-1'>
+                  <div className='col-xs-11'>
                     <div className='well'>
                       Por favor, ingrese un número de procesos a simular
                     </div>
@@ -118,6 +120,7 @@ class ProcessScheduling extends React.Component {
             }
           </div>
         </div>
+
         <div className='row'>
           <div className='col-xs-12'>
             {

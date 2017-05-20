@@ -7,11 +7,12 @@ const AlgorithmSelector = (props) => {
   const {
     value,
     onChange,
+    isEnabled,
   } = props;
 
   return (
     <form className='form-horizontal'>
-      <fieldset className='form-group'>
+      <fieldset className='form-group' disabled={!isEnabled}>
         <label htmlFor='algorithm-selector'>
           Algoritmo de planificación
         </label>
@@ -30,7 +31,12 @@ const AlgorithmSelector = (props) => {
   );
 };
 
+AlgorithmSelector.defaultProps = {
+  isEnabled: true,
+};
+
 AlgorithmSelector.propTypes = {
+  isEnabled: PropTypes.bool,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };

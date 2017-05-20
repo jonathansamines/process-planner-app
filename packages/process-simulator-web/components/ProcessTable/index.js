@@ -5,9 +5,15 @@ const PropTypes = require('prop-types');
 const ProcessTableRow = require('./ProcessTableRow');
 
 const byProcessName = (newProcess) => {
-  return processUnit => (
-    processUnit.name === newProcess.name ? newProcess : processUnit
-  );
+  return (projectionUnit) => {
+    if (projectionUnit.process.name === newProcess.name) {
+      return Object.assign({}, projectionUnit, {
+        process: newProcess,
+      });
+    }
+
+    return projectionUnit;
+  };
 };
 
 class ProcessTable extends React.Component {
@@ -24,7 +30,7 @@ class ProcessTable extends React.Component {
   }
 
   onProcessUnitChange(processUnit) {
-    const newProjection = this.projection.map(byProcessName(processUnit));
+    const newProjection = this.state.projection.map(byProcessName(processUnit));
 
     this.setState({
       projection: newProjection,

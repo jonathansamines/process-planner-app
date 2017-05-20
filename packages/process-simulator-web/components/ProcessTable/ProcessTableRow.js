@@ -32,14 +32,16 @@ class ProcessTableRow extends React.Component {
             type='number'
             className='form-control'
             min={0}
-            defaultValue={processUnit.startTime} />
+            onChange={this.onEdition('startTime')}
+            value={processUnit.startTime} />
         </td>
         <td>
           <input
             type='number'
             className='form-control'
             min={0}
-            defaultValue={processUnit.executionTime} />
+            onChange={this.onEdition('executionTime')}
+            value={processUnit.executionTime} />
         </td>
         <td>{schedule.completionTime}</td>
         <td>{schedule.serviceTime}</td>

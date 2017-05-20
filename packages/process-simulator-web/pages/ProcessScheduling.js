@@ -14,7 +14,7 @@ function generateProcessList(numberOfProcess) {
     return {
       name: `Proceso #${index}`,
       startTime: 0,
-      executionTime: 100,
+      executionTime: 1,
     };
   });
 }

@@ -6,12 +6,12 @@ const classNames = require('classnames');
 const createRange = require('lodash/range');
 
 const createTimingColumns = (totalTime, schedule) => {
-  const range = createRange(totalTime);
+  const range = createRange(totalTime + 1);
 
   return range.map((timeUnit) => {
-    const isWaiting = !!schedule.waitingUnits.find(u => u - 1 === timeUnit);
-    const isExecuting = !!schedule.executionUnits.find(u => u - 1 === timeUnit);
-    const isCompleted = schedule.completionTime - 1 === timeUnit;
+    const isWaiting = !!schedule.waitingUnits.filter(u => u === timeUnit).length;
+    const isExecuting = !!schedule.executionUnits.filter(u => u === timeUnit).length;
+    const isCompleted = schedule.completionTime === timeUnit;
 
     const styles = classNames({
       label: true,

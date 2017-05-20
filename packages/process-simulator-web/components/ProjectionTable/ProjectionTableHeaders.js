@@ -6,7 +6,7 @@ const createRange = require('lodash/range');
 
 const ProjectionTableHeaders = (props) => {
   const { timeUnits } = props;
-  const range = createRange(timeUnits);
+  const range = createRange(timeUnits + 1);
 
   return (
     <thead>

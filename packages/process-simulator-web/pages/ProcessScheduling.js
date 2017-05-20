@@ -18,42 +18,59 @@ function generateProcessList(numberOfProcess) {
   });
 }
 
+function getProcessTable(numberOfProcess) {
+  const processList = generateProcessList(numberOfProcess);
+  const scheduler = planner.create({
+    processList,
+  });
+
+  const schedulingPlan = scheduler.firstComeFirstServed();
+
+  return (
+    <ProcessTable
+      projection={schedulingPlan.projection}
+      averageWaitingTime={0}
+      averageServiceTime={0}
+      averageCPUUsage={0} />
+  );
+}
+
 class ProcessScheduling extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      numberOfProcess: 1,
+      numberOfProcess: 0,
       projection: [],
+      isProcessNumberConfirmed: false,
     };
 
-    this.generateProcessTable = this.generateProcessTable.bind(this);
+    this.confirmProcessNumber = this.confirmProcessNumber.bind(this);
   }
 
-  generateProcessTable(numberOfProcess) {
-    this.setState({ numberOfProcess });
+  confirmProcessNumber(numberOfProcess) {
+    this.setState({
+      numberOfProcess,
+      isProcessNumberConfirmed: true,
+    });
   }
 
   render() {
-    const processList = generateProcessList(this.state.numberOfProcess);
-    const scheduler = planner.create({
-      processList,
-    });
-
-    const schedulingPlan = scheduler.firstComeFirstServed();
+    const { isProcessNumberConfirmed, numberOfProcess } = this.state;
 
     return (
       <div className='container'>
         <div className='row'>
           <div className='col-xs-3'>
-            <ProcessGenerationForm onChange={this.generateProcessTable} />
+            <ProcessGenerationForm
+              isEnabled={!isProcessNumberConfirmed}
+              onChange={this.confirmProcessNumber} />
           </div>
           <div className='col-xs-9'>
-            <ProcessTable
-              projection={schedulingPlan.projection}
-              averageWaitingTime={0}
-              averageServiceTime={0}
-              averageCPUUsage={0} />
+            {
+              isProcessNumberConfirmed &&
+              getProcessTable(numberOfProcess)
+            }
           </div>
         </div>
       </div>

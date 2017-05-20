@@ -11,22 +11,28 @@ class ProcessGenerationForm extends React.Component {
       numberOfProcess: 0,
     };
 
-    this.updateNumberOfProcess = this.updateNumberOfProcess.bind(this);
     this.confirm = this.confirm.bind(this);
+    this.updateNumberOfProcess = this.updateNumberOfProcess.bind(this);
   }
 
   updateNumberOfProcess(event) {
-    this.setState({ numberOfProcess: event.value });
+    this.setState({ numberOfProcess: event.target.value });
   }
 
-  confirm() {
+  confirm(event) {
+    event.preventDefault();
     this.props.onChange(this.state.numberOfProcess);
   }
 
   render() {
+    const { isEnabled } = this.props;
+    const { numberOfProcess } = this.state;
+
     return (
       <form className='form-horizontal'>
-        <div className='form-group'>
+        <fieldset
+          className='form-group'
+          disabled={!isEnabled}>
           <label htmlFor='numberOfProcess'>Número de procesos a simular</label>
           <input
             id='numberOfProcess'
@@ -34,22 +40,31 @@ class ProcessGenerationForm extends React.Component {
             min={0}
             step={1}
             className='form-control'
+            value={numberOfProcess}
             onChange={this.updateNumberOfProcess} />
-        </div>
-        <div className='form-group'>
+        </fieldset>
+
+        <fieldset
+          className='form-group'
+          disabled={!isEnabled}>
           <button
             className='btn btn-success'
             type='submit'
             onClick={this.confirm}>
             Generar Procesos
           </button>
-        </div>
+        </fieldset>
       </form>
     );
   }
 }
 
+ProcessGenerationForm.defaultProps = {
+  isEnabled: true,
+};
+
 ProcessGenerationForm.propTypes = {
+  isEnabled: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
 };
 

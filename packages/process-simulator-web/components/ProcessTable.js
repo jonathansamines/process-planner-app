@@ -5,7 +5,7 @@ const PropTypes = require('prop-types');
 
 function createProcessRow(projectionUnit) {
   return (
-    <tr>
+    <tr key={projectionUnit.process.name}>
       <td>{projectionUnit.process.name}</td>
       <td>
         <input
@@ -37,15 +37,20 @@ const ProcessTable = (props) => {
 
   return (
     <table className='table table-striped'>
+      <caption>
+        <strong>Resumen de Procesos</strong>
+        <br />
+        <small>Ingrese la información requerida para cada proceso</small>
+      </caption>
       <thead>
         <tr>
           <td>Procesos</td>
-          <td>Tiempo Inicial</td>
-          <td>Tiempo de Ejecución</td>
-          <td>Tiempo Final</td>
-          <td>Tiempo de Servicio</td>
-          <td>Tiempo de Espera</td>
-          <td>Uso del CPU</td>
+          <td>Tiempo Inicial (ti)</td>
+          <td>Tiempo de Ejecución (t)</td>
+          <td>Tiempo Final (tf)</td>
+          <td>Tiempo de Servicio (T)</td>
+          <td>Tiempo de Espera (E)</td>
+          <td>Uso del CPU (I)</td>
         </tr>
       </thead>
 

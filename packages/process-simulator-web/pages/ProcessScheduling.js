@@ -58,20 +58,17 @@ class ProcessScheduling extends React.Component {
     this.setState({
       selectedAlgorithm: event.target.value,
     });
+
+    this.scheduleProcessList(this.state.projection);
   }
 
   confirmProcessNumber(numberOfProcess) {
     const processList = generateProcessList(numberOfProcess);
-    const scheduler = planner.create({
-      processList,
-    });
-
-    const schedulingPlan = scheduler[algorithmImplMap[this.state.selectedAlgorithm]]();
 
     this.setState({
       numberOfProcess,
       step: 1,
-      projection: schedulingPlan.projection,
+      projection: processList.map(processUnit => ({ process: processUnit })),
     });
   }
 
@@ -81,7 +78,14 @@ class ProcessScheduling extends React.Component {
       processList,
     });
 
-    const schedulingPlan = scheduler[algorithmImplMap[this.state.selectedAlgorithm]]();
+    const algorithmMethod = algorithmImplMap[this.state.selectedAlgorithm];
+    const algorithm = scheduler[algorithmMethod];
+
+    if (!algorithm) {
+      throw new Error(`The selected algorithm ${algorithmMethod} is not supported`);
+    }
+
+    const schedulingPlan = algorithm();
 
     console.info('Scheduling plan: ', schedulingPlan);
 

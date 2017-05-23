@@ -123,9 +123,9 @@ class ProcessTable extends React.Component {
 ProcessTable.propTypes = {
   onChange: PropTypes.func.isRequired,
   projection: PropTypes.arrayOf(PropTypes.object).isRequired,
-  averageServiceTime: PropTypes.number.isRequired,
-  averageWaitingTime: PropTypes.number.isRequired,
-  averageCPUUsage: PropTypes.number.isRequired,
+  averageServiceTime: PropTypes.number,
+  averageWaitingTime: PropTypes.number,
+  averageCPUUsage: PropTypes.number,
 };
 
 module.exports = ProcessTable;

@@ -48,6 +48,14 @@ class ProcessScheduling extends React.Component {
     this.onAlgorithmChange = this.onAlgorithmChange.bind(this);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    // If the algorithm, changes then just pass the current projection
+    // to compute again with a different algorithm
+    if (this.state.selectedAlgorithm !== prevState.selectedAlgorithm) {
+      this.scheduleProcessList(this.state.projection);
+    }
+  }
+
   wizardStep(steps, getComponent) {
     if (steps.indexOf(this.state.step) === -1) return null;
 
@@ -58,8 +66,6 @@ class ProcessScheduling extends React.Component {
     this.setState({
       selectedAlgorithm: event.target.value,
     });
-
-    this.scheduleProcessList(this.state.projection);
   }
 
   confirmProcessNumber(numberOfProcess) {

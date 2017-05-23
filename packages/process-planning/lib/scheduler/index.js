@@ -30,7 +30,7 @@ function schedulerBuilder(options) {
 
   const shortestJob = firstInFirstOutScheduler.schedule(
     Object.assign({}, opts, {
-      processList: orderBy(opts.processList, ['executionTime'], ['desc']),
+      processList: orderBy(opts.processList, ['startTime', 'executionTime'], ['asc', 'asc']),
     })
   );
 

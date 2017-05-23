@@ -9,8 +9,8 @@ const ProjectionTable = require('./../components/ProjectionTable');
 const AlgorithmSelector = require('./../components/AlgorithmSelector');
 
 const algorithmNameMap = {
-  FCFS: 'First Come, First Served',
-  SJF: 'Shortest Job First',
+  FCFS: 'Primero en Entrar, primero en ser servido',
+  SJF: 'Trabajo más corto primero',
   RR: 'Round Robin',
 };
 
@@ -132,6 +132,22 @@ class ProcessScheduling extends React.Component {
               isEnabled={step === 2}
               value={selectedAlgorithm}
               onChange={this.onAlgorithmChange} />
+
+            <br />
+            <hr />
+            <br />
+
+            {/* A quantum value is just valid for round robin  */}
+            <form className='form-horizontal'>
+              <div className='form-group'>
+                <label htmlFor='quantumValue'>Valor del Quantum</label>
+                <input
+                  id='quantumValue'
+                  className='form-control'
+                  placeholder='Ingresa un valor de quantum'
+                  disabled={selectedAlgorithm !== 'RR'} />
+              </div>
+            </form>
           </div>
           <div className='col-xs-9 col-xs-offset-1'>
             {

@@ -22,8 +22,8 @@ const AlgorithmSelector = (props) => {
           className='form-control'
           value={value}
           onChange={onChange}>
-          <option value='FCFS'>First Come First Served</option>
-          <option value='SJF'>Shortest Job First</option>
+          <option value='FCFS'>Primero en Entrar, primero en ser servido</option>
+          <option value='SJF'>Trabajo más corto primero</option>
           <option value='RR'>Round Robin</option>
         </select>
       </fieldset>

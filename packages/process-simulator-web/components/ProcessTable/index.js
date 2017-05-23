@@ -29,6 +29,14 @@ class ProcessTable extends React.Component {
     this.confirmProcessInfo = this.confirmProcessInfo.bind(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.projection !== nextProps.projection) {
+      this.setState({
+        projection: nextProps.projection,
+      });
+    }
+  }
+
   onProcessUnitChange(processUnit) {
     const newProjection = this.state.projection.map(byProcessName(processUnit));
 

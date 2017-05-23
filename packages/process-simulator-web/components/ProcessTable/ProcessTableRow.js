@@ -24,7 +24,7 @@ class ProcessTableRow extends React.Component {
   }
 
   render() {
-    const { processUnit, schedule } = this.props;
+    const { processUnit, schedule, isEnabled } = this.props;
 
     return (
       <tr>
@@ -34,6 +34,7 @@ class ProcessTableRow extends React.Component {
             type='number'
             className='form-control input-sm'
             min={0}
+            disabled={!isEnabled}
             onChange={this.onEdition('startTime')}
             value={processUnit.startTime} />
         </td>
@@ -42,6 +43,7 @@ class ProcessTableRow extends React.Component {
             type='number'
             className='form-control input-sm'
             min={0}
+            disabled={!isEnabled}
             onChange={this.onEdition('executionTime')}
             value={processUnit.executionTime} />
         </td>
@@ -56,9 +58,11 @@ class ProcessTableRow extends React.Component {
 
 ProcessTableRow.defaultProps = {
   schedule: {},
+  isEnabled: true,
 };
 
 ProcessTableRow.propTypes = {
+  isEnabled: PropTypes.bool,
   processUnit: PropTypes.object.isRequired,
   schedule: PropTypes.object,
   onChange: PropTypes.func.isRequired,

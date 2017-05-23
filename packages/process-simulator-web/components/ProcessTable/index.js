@@ -87,6 +87,7 @@ class ProcessTable extends React.Component {
           {projection.map(projectionUnit => (
             <ProcessTableRow
               key={projectionUnit.process.name}
+              isEnabled={!isProcessInfoConfirmed}
               processUnit={projectionUnit.process}
               schedule={projectionUnit.schedule}
               onChange={this.onProcessUnitChange} />

@@ -179,10 +179,16 @@ class ProcessScheduling extends React.Component {
           <div className='col-xs-12'>
             {
               this.wizardStep([2], () => (
-                <ProjectionTable
-                  algorithName={algorithmNameMap[selectedAlgorithm]}
-                  projection={projection}
-                  totalTime={totalTime} />
+                <div>
+                  <br />
+                  <hr />
+                  <br />
+
+                  <ProjectionTable
+                    algorithName={algorithmNameMap[selectedAlgorithm]}
+                    projection={projection}
+                    totalTime={totalTime} />
+                </div>
               ))
             }
           </div>

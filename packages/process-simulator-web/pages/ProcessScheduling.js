@@ -37,15 +37,17 @@ class ProcessScheduling extends React.Component {
     super(props);
 
     this.state = {
+      step: 0,
       numberOfProcess: 0,
       projection: [],
+      quantumValue: 0,
       selectedAlgorithm: 'FCFS',
-      step: 0,
     };
 
     this.confirmProcessNumber = this.confirmProcessNumber.bind(this);
     this.scheduleProcessList = this.scheduleProcessList.bind(this);
     this.onAlgorithmChange = this.onAlgorithmChange.bind(this);
+    this.updateQuantum = this.updateQuantum.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -54,6 +56,12 @@ class ProcessScheduling extends React.Component {
     if (this.state.selectedAlgorithm !== prevState.selectedAlgorithm) {
       this.scheduleProcessList(this.state.projection);
     }
+  }
+
+  updateQuantum(event) {
+    this.setState({
+      quantumValue: +event.target.value,
+    });
   }
 
   wizardStep(steps, getComponent) {
@@ -79,19 +87,27 @@ class ProcessScheduling extends React.Component {
   }
 
   scheduleProcessList(projection) {
+    const { selectedAlgorithm, quantumValue } = this.state;
     const processList = projection.map(projectionUnit => projectionUnit.process);
     const scheduler = planner.create({
       processList,
     });
 
-    const algorithmMethod = algorithmImplMap[this.state.selectedAlgorithm];
+    const algorithmMethod = algorithmImplMap[selectedAlgorithm];
     const algorithm = scheduler[algorithmMethod];
 
     if (!algorithm) {
       throw new Error(`The selected algorithm ${algorithmMethod} is not supported`);
     }
 
-    const schedulingPlan = algorithm();
+    const args = [];
+
+    // The round robin algorithm expects a quantum value
+    if (selectedAlgorithm === 'RR') {
+      args.push(quantumValue);
+    }
+
+    const schedulingPlan = algorithm.apply(algorithm, args);
 
     console.info('Scheduling plan: ', schedulingPlan);
 
@@ -114,6 +130,7 @@ class ProcessScheduling extends React.Component {
       averageWaitingTime,
       averageServiceTime,
       averageCPUUsage,
+      quantumValue,
     } = this.state;
 
     return (
@@ -144,7 +161,9 @@ class ProcessScheduling extends React.Component {
                 <input
                   id='quantumValue'
                   className='form-control'
+                  value={quantumValue}
                   placeholder='Ingresa un valor de quantum'
+                  onChange={this.updateQuantum}
                   disabled={selectedAlgorithm !== 'RR'} />
               </div>
             </form>

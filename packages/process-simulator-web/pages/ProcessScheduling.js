@@ -91,6 +91,9 @@ class ProcessScheduling extends React.Component {
 
     this.setState({
       projection: schedulingPlan.projection,
+      averageWaitingTime: schedulingPlan.averageWaitingTime,
+      averageServiceTime: schedulingPlan.averageServiceTime,
+      averageCPUUsage: schedulingPlan.averageCPUUsage,
       totalTime: schedulingPlan.totalTime,
       step: 2,
     });
@@ -102,6 +105,9 @@ class ProcessScheduling extends React.Component {
       projection,
       totalTime,
       selectedAlgorithm,
+      averageWaitingTime,
+      averageServiceTime,
+      averageCPUUsage,
     } = this.state;
 
     return (
@@ -138,9 +144,9 @@ class ProcessScheduling extends React.Component {
               this.wizardStep([1, 2], () => (
                 <ProcessTable
                   projection={projection}
-                  averageWaitingTime={0}
-                  averageServiceTime={0}
-                  averageCPUUsage={0}
+                  averageWaitingTime={averageWaitingTime}
+                  averageServiceTime={averageServiceTime}
+                  averageCPUUsage={averageCPUUsage}
                   onChange={this.scheduleProcessList} />
               ))
             }

@@ -4,6 +4,8 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const ProcessTableRow = require('./ProcessTableRow');
 
+const NON_COMPUTED_SYMBOL = '-';
+
 const byProcessName = (newProcess) => {
   return (projectionUnit) => {
     if (projectionUnit.process.name === newProcess.name) {
@@ -97,9 +99,9 @@ class ProcessTable extends React.Component {
         <tfoot>
           <tr>
             <td colSpan={4} />
-            <td>{averageServiceTime}</td>
-            <td>{averageWaitingTime}</td>
-            <td>{averageCPUUsage}</td>
+            <td>{averageServiceTime || NON_COMPUTED_SYMBOL}</td>
+            <td>{averageWaitingTime || NON_COMPUTED_SYMBOL}</td>
+            <td>{averageCPUUsage || NON_COMPUTED_SYMBOL}</td>
           </tr>
           <tr>
             <td colSpan={6} />

@@ -51,7 +51,7 @@ class ProcessGenerationForm extends React.Component {
             className='btn btn-success'
             type='submit'
             onClick={this.confirm}>
-            Generar Procesos
+            Crear Procesos
           </button>
         </fieldset>
       </form>

@@ -110,7 +110,7 @@ class ProcessTable extends React.Component {
                 className='btn btn-primary'
                 disabled={isProcessInfoConfirmed}
                 onClick={this.confirmProcessInfo}>
-                Planificar Procesos
+                Simular Planificación
               </button>
             </td>
           </tr>

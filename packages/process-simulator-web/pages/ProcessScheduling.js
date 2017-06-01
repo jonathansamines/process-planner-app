@@ -124,7 +124,7 @@ class ProcessScheduling extends React.Component {
     const resource = {
       fecha_simulacion: (new Date()).toISOString(),
       quantum: quantumValue,
-      algoritmo: algorithm,
+      algoritmo: selectedAlgorithm,
       tiempo_total: schedulingPlan.totalTime,
       lista_procesos: schedulingPlan.projection.map((prj) => {
         return {
@@ -145,6 +145,11 @@ class ProcessScheduling extends React.Component {
     };
 
     fetch('/process-planner-web/planificar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
       body: JSON.stringify(resource),
     });
   }

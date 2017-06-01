@@ -2,6 +2,7 @@
 
 const React = require('react');
 const createRange = require('lodash/range');
+const last = require('lodash/last');
 const planner = require('@jonathansamines/process-planning');
 const ProcessGenerationForm = require('./../components/ProcessGenerationForm');
 const ProcessTable = require('./../components/ProcessTable');
@@ -118,6 +119,33 @@ class ProcessScheduling extends React.Component {
       averageCPUUsage: schedulingPlan.averageCPUUsage,
       totalTime: schedulingPlan.totalTime,
       step: 2,
+    });
+
+    const resource = {
+      fecha_simulacion: (new Date()).toISOString(),
+      quantum: quantumValue,
+      algoritmo: algorithm,
+      tiempo_total: schedulingPlan.totalTime,
+      lista_procesos: schedulingPlan.projection.map((prj) => {
+        return {
+          nombre_proceso: prj.process.name,
+          tiempo_inicial: prj.process.startTime,
+          tiempo_ejecucion: prj.process.executionTime,
+          tiempo_finalizacion: prj.schedule.completionTime,
+          tiempo_servicio: prj.schedule.serviceTime,
+          tiempo_espera: last(prj.schedule.waitingUnits),
+          uso_cpu_compartido: prj.schedule.cpuUsage,
+          planificacion: {
+            unidades_ejecucion: prj.schedule.executionUnits.toString(),
+            unidades_espera: prj.schedule.waitingUnits.toString(),
+            tiempo_finalizacion: prj.schedule.completionTime,
+          },
+        };
+      }),
+    };
+
+    fetch('/process-planner-web/planificar', {
+      body: JSON.stringify(resource),
     });
   }
 

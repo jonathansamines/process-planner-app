@@ -30,7 +30,7 @@ const scheduler = builder.create({
       executionTime: 3,
     },
     {
-      name: 'Process C',
+      name: 'Process F',
       startTime: 15,
       executionTime: 2,
     },

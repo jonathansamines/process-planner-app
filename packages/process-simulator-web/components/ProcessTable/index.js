@@ -107,10 +107,9 @@ class ProcessTable extends React.Component {
             <td colSpan={6} />
             <td className='text-right'>
               <button
-                className='btn btn-primary'
-                disabled={isProcessInfoConfirmed}
+                className='btn btn-success'
                 onClick={this.confirmProcessInfo}>
-                Simular Planificación
+                Planificar y Guardar
               </button>
             </td>
           </tr>

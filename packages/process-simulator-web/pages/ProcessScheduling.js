@@ -9,6 +9,8 @@ const ProcessTable = require('./../components/ProcessTable');
 const ProjectionTable = require('./../components/ProjectionTable');
 const AlgorithmSelector = require('./../components/AlgorithmSelector');
 
+const DEFAULT_SELECTED_ALGORITH = 'FCFS';
+
 const algorithmNameMap = {
   FCFS: 'Primero en Entrar, primero en ser servido',
   SJF: 'Trabajo más corto primero',
@@ -20,6 +22,40 @@ const algorithmImplMap = {
   SJF: 'shortestJob',
   RR: 'roundRobin',
 };
+
+function createSimulation(quantumValue, selectedAlgorithm, schedulingPlan) {
+  const resource = {
+    fecha_simulacion: (new Date()).toISOString(),
+    quantum: quantumValue,
+    algoritmo: selectedAlgorithm,
+    tiempo_total: schedulingPlan.totalTime,
+    lista_procesos: schedulingPlan.projection.map((prj) => {
+      return {
+        nombre_proceso: prj.process.name,
+        tiempo_inicial: prj.process.startTime,
+        tiempo_ejecucion: prj.process.executionTime,
+        tiempo_finalizacion: prj.schedule.completionTime,
+        tiempo_servicio: prj.schedule.serviceTime,
+        tiempo_espera: last(prj.schedule.waitingUnits),
+        uso_cpu_compartido: prj.schedule.cpuUsage,
+        planificacion: {
+          unidades_ejecucion: prj.schedule.executionUnits.toString(),
+          unidades_espera: prj.schedule.waitingUnits.toString(),
+          tiempo_finalizacion: prj.schedule.completionTime,
+        },
+      };
+    }),
+  };
+
+  return fetch('/process-planner-web/planificar', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(resource),
+  });
+}
 
 function generateProcessList(numberOfProcess) {
   const processList = createRange(numberOfProcess);
@@ -42,21 +78,14 @@ class ProcessScheduling extends React.Component {
       numberOfProcess: 1,
       projection: [],
       quantumValue: 3,
-      selectedAlgorithm: 'FCFS',
+      selectedAlgorithm: DEFAULT_SELECTED_ALGORITH,
+      unconfirmedAlgorithm: DEFAULT_SELECTED_ALGORITH,
     };
 
     this.confirmProcessNumber = this.confirmProcessNumber.bind(this);
     this.scheduleProcessList = this.scheduleProcessList.bind(this);
     this.onAlgorithmChange = this.onAlgorithmChange.bind(this);
     this.updateQuantum = this.updateQuantum.bind(this);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // If the algorithm, changes then just pass the current projection
-    // to compute again with a different algorithm
-    if (this.state.selectedAlgorithm !== prevState.selectedAlgorithm) {
-      this.scheduleProcessList(this.state.projection);
-    }
   }
 
   updateQuantum(event) {
@@ -73,7 +102,7 @@ class ProcessScheduling extends React.Component {
 
   onAlgorithmChange(event) {
     this.setState({
-      selectedAlgorithm: event.target.value,
+      unconfirmedAlgorithm: event.target.value,
     });
   }
 
@@ -88,13 +117,13 @@ class ProcessScheduling extends React.Component {
   }
 
   scheduleProcessList(projection) {
-    const { selectedAlgorithm, quantumValue } = this.state;
+    const { unconfirmedAlgorithm, quantumValue } = this.state;
     const processList = projection.map(projectionUnit => projectionUnit.process);
     const scheduler = planner.create({
       processList,
     });
 
-    const algorithmMethod = algorithmImplMap[selectedAlgorithm];
+    const algorithmMethod = algorithmImplMap[unconfirmedAlgorithm];
     const algorithm = scheduler[algorithmMethod];
 
     if (!algorithm) {
@@ -104,7 +133,7 @@ class ProcessScheduling extends React.Component {
     const args = [];
 
     // The round robin algorithm expects a quantum value
-    if (selectedAlgorithm === 'RR') {
+    if (unconfirmedAlgorithm === 'RR') {
       args.push(quantumValue);
     }
 
@@ -112,45 +141,18 @@ class ProcessScheduling extends React.Component {
 
     console.info('Scheduling plan: ', schedulingPlan);
 
-    this.setState({
-      projection: schedulingPlan.projection,
-      averageWaitingTime: schedulingPlan.averageWaitingTime,
-      averageServiceTime: schedulingPlan.averageServiceTime,
-      averageCPUUsage: schedulingPlan.averageCPUUsage,
-      totalTime: schedulingPlan.totalTime,
-      step: 2,
-    });
-
-    const resource = {
-      fecha_simulacion: (new Date()).toISOString(),
-      quantum: quantumValue,
-      algoritmo: selectedAlgorithm,
-      tiempo_total: schedulingPlan.totalTime,
-      lista_procesos: schedulingPlan.projection.map((prj) => {
-        return {
-          nombre_proceso: prj.process.name,
-          tiempo_inicial: prj.process.startTime,
-          tiempo_ejecucion: prj.process.executionTime,
-          tiempo_finalizacion: prj.schedule.completionTime,
-          tiempo_servicio: prj.schedule.serviceTime,
-          tiempo_espera: last(prj.schedule.waitingUnits),
-          uso_cpu_compartido: prj.schedule.cpuUsage,
-          planificacion: {
-            unidades_ejecucion: prj.schedule.executionUnits.toString(),
-            unidades_espera: prj.schedule.waitingUnits.toString(),
-            tiempo_finalizacion: prj.schedule.completionTime,
-          },
-        };
-      }),
-    };
-
-    fetch('/process-planner-web/planificar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(resource),
+    this.setState((prevState) => {
+      return {
+        selectedAlgorithm: prevState.unconfirmedAlgorithm,
+        projection: schedulingPlan.projection,
+        averageWaitingTime: schedulingPlan.averageWaitingTime,
+        averageServiceTime: schedulingPlan.averageServiceTime,
+        averageCPUUsage: schedulingPlan.averageCPUUsage,
+        totalTime: schedulingPlan.totalTime,
+        step: 2,
+      };
+    }, () => {
+      createSimulation(quantumValue, this.state.selectedAlgorithm, schedulingPlan);
     });
   }
 
@@ -159,6 +161,7 @@ class ProcessScheduling extends React.Component {
       step,
       projection,
       totalTime,
+      unconfirmedAlgorithm,
       selectedAlgorithm,
       averageWaitingTime,
       averageServiceTime,
@@ -179,8 +182,7 @@ class ProcessScheduling extends React.Component {
             <br />
 
             <AlgorithmSelector
-              isEnabled={step === 2}
-              value={selectedAlgorithm}
+              value={unconfirmedAlgorithm}
               onChange={this.onAlgorithmChange} />
 
             <br />
@@ -197,7 +199,7 @@ class ProcessScheduling extends React.Component {
                   value={quantumValue}
                   placeholder='Ingresa un valor de quantum'
                   onChange={this.updateQuantum}
-                  disabled={selectedAlgorithm !== 'RR'} />
+                  disabled={unconfirmedAlgorithm !== 'RR'} />
               </div>
             </form>
           </div>

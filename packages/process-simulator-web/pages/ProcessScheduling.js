@@ -39,9 +39,9 @@ class ProcessScheduling extends React.Component {
 
     this.state = {
       step: 0,
-      numberOfProcess: 0,
+      numberOfProcess: 1,
       projection: [],
-      quantumValue: 0,
+      quantumValue: 3,
       selectedAlgorithm: 'FCFS',
     };
 

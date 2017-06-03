@@ -1,9 +1,9 @@
 'use strict';
 
-const createRange = require('lodash/range');
 const orderBy = require('lodash/orderBy');
 const cloneDeep = require('lodash/cloneDeep');
 const getLastItem = require('lodash/last');
+const projectedTimes = require('./../projected-times');
 
 function getAllowedTimeToSchedule(executionTime, quantum) {
   if (executionTime >= quantum) {
@@ -13,26 +13,25 @@ function getAllowedTimeToSchedule(executionTime, quantum) {
   return executionTime;
 }
 
-function createScheduleForProcess(previousProcessSchedule, timeToSchedule) {
-  const currentExecutionTime = getLastItem(previousProcessSchedule.executionUnits) + 1;
+function findProcessWithHigherWaitingTime(prioritizedProcessList, projection) {
+  const pendingProjections = prioritizedProcessList.map((p) => {
+    const projectionsForProcess = projection.filter(pr => pr.process.name === p.name);
 
-  const executionUnits = createRange(
-    currentExecutionTime,
-    currentExecutionTime + timeToSchedule
-  );
+    const totalWaitingTime = projectionsForProcess.reduce((total, pr) => (
+      total + pr.schedule.waitingUnits.length
+    ), 0);
 
-  const waitingUnits = createRange(
-    previousProcessSchedule.executionUnits[0],
-    currentExecutionTime
-  );
+    return {
+      process: p,
+      totalWaitingTime,
+    };
+  });
 
-  return {
-    waitingUnits,
-    executionUnits,
-  };
+  return getLastItem(orderBy(pendingProjections, 'totalWaitingTime'));
 }
 
 function createProjection(prioritizedProcessList, quantum) {
+  let currentTime = 0;
   const projection = [];
 
   // while the process list is not empty
@@ -42,70 +41,86 @@ function createProjection(prioritizedProcessList, quantum) {
     // the first item in the prioritized process list, is the one which has a higher priority
     const processToSchedule = prioritizedProcessList.shift();
 
+    console.info(
+      'Evaluating process (%s) with (%s seconds) remaining',
+      processToSchedule.name,
+      processToSchedule.executionTime
+    );
+
+    // is there other process with a longer waiting time
+    const priorityProcess = findProcessWithHigherWaitingTime(prioritizedProcessList, projection);
+
+    const isPrioritizedProcessAvailable = (
+      priorityProcess &&
+      priorityProcess.totalWaitingTime > 0 &&
+      priorityProcess.process.executionTime > 0
+    );
+
+    if (isPrioritizedProcessAvailable) {
+      console.info(
+        '    Scheduling priority process (%s) due long waiting time (%s)',
+        priorityProcess.process.name,
+        priorityProcess.totalWaitingTime
+      );
+
+      const index = prioritizedProcessList.findIndex(p => p.name === priorityProcess.process.name);
+      prioritizedProcessList.splice(index, 1);
+      prioritizedProcessList.unshift(processToSchedule);
+      prioritizedProcessList.unshift(priorityProcess.process);
+
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+
+    // there are not priority process, proceed with the current one
     const timeToSchedule = getAllowedTimeToSchedule(processToSchedule.executionTime, quantum);
 
-    console.info(
-      'Executing process [%s] with [%s seconds] remaining by [%s seconds]',
+    console.log(
+      '    Scheduling process (%s) by (%s seconds)',
       processToSchedule.name,
-      processToSchedule.executionTime,
       timeToSchedule
     );
 
     processToSchedule.executionTime -= timeToSchedule;
 
-    let previousProjection = getLastItem(projection);
+    let currentProcessProjection = projection.find(p => p.process.name === processToSchedule.name);
 
-    if (previousProjection === undefined) {
-      previousProjection = {
-        process: {},
+    if (!currentProcessProjection) {
+      currentProcessProjection = {
+        process: processToSchedule,
         schedule: {
-          executionUnits: [-1],
+          executionUnits: [],
           waitingUnits: [],
         },
       };
+
+      projection.push(currentProcessProjection);
     }
 
-    const currentProcessProjection = {
-      process: processToSchedule,
-      schedule: createScheduleForProcess(
-        previousProjection.schedule,
-        timeToSchedule
-      ),
-    };
+    for (let timeUnit = 0; timeUnit < timeToSchedule; timeUnit += 1) {
+      const hasProcessToScheduleStarted = processToSchedule.startTime <= currentTime;
 
-    projection.push(currentProcessProjection);
+      if (hasProcessToScheduleStarted) {
+        currentProcessProjection.schedule.executionUnits.push(currentTime);
 
-    // has the next process in the queue
-    // wait for a long time?
-    const pendingProjections = prioritizedProcessList.map((p) => {
-      const projectionsForProcess = projection.filter(pr => pr.process.name === p.name);
+        projection.forEach(item => {
+          // ignore the current projection
+          if (item.process.name === processToSchedule.name) return;
 
-      const totalWaitingTime = projectionsForProcess.reduce((total, pr) => (
-        total + pr.schedule.waitingUnits.length
-      ), 0);
+          const test = getLastItem(currentProcessProjection.schedule.executionUnits);
 
-      return {
-        process: p,
-        totalWaitingTime,
-      };
-    });
+          // if the start time for the current process already started, then create a waiting entry for the current time
+          if (item.process.startTime <= currentTime && currentTime < test && item.process.executionTime > 0) {
+            item.schedule.waitingUnits.push(currentTime);
+          }
+        });
 
-    const priorityProcess = getLastItem(orderBy(pendingProjections, 'totalWaitingTime'));
+        currentTime += 1;
 
-    const isPrioritizedProcessAvailable = (
-      priorityProcess &&
-      priorityProcess.waitingTime > 0 &&
-      priorityProcess.process.executionTime > 0
-    );
+        continue;
+      }
 
-    if (isPrioritizedProcessAvailable) {
-      console.info('Scheduling priority process [%s] by waiting time [%s]', priorityProcess.process.name, priorityProcess.totalWaitingTime);
-
-      const index = prioritizedProcessList.findIndex(p => p.name === priorityProcess.process.name);
-      prioritizedProcessList.splice(index, 1);
-      prioritizedProcessList.unshift(processToSchedule);
-
-      continue;
+      currentProcessProjection.schedule.waitignUnits.push(currentTime);
     }
 
     // is the next process in the queue
@@ -114,18 +129,11 @@ function createProjection(prioritizedProcessList, quantum) {
     const lastExecutionTime = getLastItem(currentProcessProjection.schedule.executionUnits);
 
     if (nextProcess) {
-      console.info(
-        '    Next process (%s) start time is [%s seconds] compared to current time [%s seconds]',
-        nextProcess.name,
-        nextProcess.startTime,
-        lastExecutionTime
-      );
-
       if (nextProcess.startTime <= lastExecutionTime && nextProcess.executionTime > 0) {
         // push the current process to the end of the queue
         // if there is still work to be done
         if (processToSchedule.executionTime > 0) {
-          console.info('    Scheduling next process. Current process de-prioritized.');
+          console.info('    Scheduling next process. Current process de-prioritized');
           prioritizedProcessList.push(processToSchedule);
         } else {
           console.info('    Current process completed');
@@ -140,7 +148,11 @@ function createProjection(prioritizedProcessList, quantum) {
     // reschedule the current one for another quantum,
     // if there is work still to be done
     if (processToSchedule.executionTime > 0) {
-      console.info('    Re-scheduling current process with priority');
+      console.info(
+        '    Next process not yet ready (%s seconds remaining). Re-scheduling current process with priority',
+        nextProcess.startTime - lastExecutionTime
+      );
+
       prioritizedProcessList.unshift(processToSchedule);
     } else {
       console.info('    Current process completed');
@@ -154,12 +166,36 @@ function buildRoundRobin(options) {
   const prioritizedProcessList = orderBy(options.processList, ['startTime'], ['asc']);
 
   return (quantum) => {
-    const processProjection = createProjection(cloneDeep(prioritizedProcessList), quantum);
+    const processList = cloneDeep(prioritizedProcessList);
+    const processProjection = createProjection(processList, quantum);
+    let completeProjection = prioritizedProcessList.map((proc, index) => {
+      return {
+        process: proc,
+        schedule: processProjection[index].schedule,
+      };
+    });
 
-    return {
-      totalTime: 0,
-      projection: processProjection,
-    };
+    // complete projection
+    completeProjection = completeProjection.map((pro) => {
+      const completionTime = getLastItem(pro.schedule.executionUnits) + 1;
+      const startTime = pro.schedule.executionUnits[0];
+      const serviceTime = completionTime - startTime;
+
+      return Object.assign({}, pro, {
+        schedule: Object.assign({}, pro.schedule, {
+          completionTime,
+          serviceTime,
+          cpuUsage: pro.process.executionTime / serviceTime,
+        }),
+      });
+    });
+
+    const computedProjectedTimes = projectedTimes.compute(completeProjection);
+
+    return Object.assign({}, computedProjectedTimes, {
+      // projection: orderBy(completeProjection, ['process.name'], ['asc']),
+      projection: completeProjection,
+    });
   };
 }
 

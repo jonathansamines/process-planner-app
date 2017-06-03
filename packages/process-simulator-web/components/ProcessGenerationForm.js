@@ -8,7 +8,7 @@ class ProcessGenerationForm extends React.Component {
     super(props);
 
     this.state = {
-      numberOfProcess: 0,
+      numberOfProcess: 1,
     };
 
     this.confirm = this.confirm.bind(this);
@@ -37,7 +37,7 @@ class ProcessGenerationForm extends React.Component {
           <input
             id='numberOfProcess'
             type='number'
-            min={0}
+            min={1}
             step={1}
             className='form-control'
             value={numberOfProcess}

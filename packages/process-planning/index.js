@@ -38,7 +38,7 @@ const scheduler = builder.create({
 });
 
 console.log(
-  JSON.stringify(scheduler.roundRobin(3))
+  JSON.stringify(scheduler.roundRobin(3).projection)
 );
 
 module.exports = builder;

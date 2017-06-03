@@ -42,7 +42,7 @@ class ProcessTableRow extends React.Component {
           <input
             type='number'
             className='form-control input-sm'
-            min={0}
+            min={1}
             disabled={!isEnabled}
             onChange={this.onEdition('executionTime')}
             value={processUnit.executionTime} />
